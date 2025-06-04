@@ -29,6 +29,4 @@ data = pd.DataFrame({
 })
 
 #### Write CSV ####
-output_path = Path("data/simulated_data")
-output_path.mkdir(parents=True, exist_ok=True)
-data.to_csv(output_path / "simulated_streetcar_delay.csv", index=False)
+data.to_csv("data/simulated_data/simulated_streetcar_delay.csv", index=False)

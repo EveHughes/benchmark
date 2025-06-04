@@ -21,31 +21,28 @@ bibliography: references.bib
 #| message: false
 
 import pandas as pd
+import numpy as np
 from pathlib import Path
-from plotnine import *
-import matplotlib.pyplot as plt
-import tabulate
-from IPython.display import Markdown
 
-# Load the dataset
-data = pd.read_csv("data/analysis_data/cleaned_ttc_streetcar_delay_2023.csv")
+# Read data
+file_path = "../data/analysis_data/cleaned_ttc_streetcar_delay_2023.csv"
+data = pd.read_csv(file_path)
 
-# Preview: define a function to display styled tables in markdown
-def preview_table(df, num_rows=5):
-    """Display the first few rows of a DataFrame as a markdown table."""
-    table = tabulate.tabulate(df.head(num_rows), headers='keys', tablefmt='github')
-    display(Markdown(f"```\n{table}\n```"))
+# Table styling function (simplified)
+def table_styling(df):
+    return df.rename(columns={
+        "year": "Year",
+        "month": "Month",
+        "hour": "Hour",
+        "incident": "Incident Type",
+        "min_delay": "Min Delay (minutes)",
+        "line": "Streetcar Line",
+        "season": "Season"
+    })
 
-# Optional: rename columns for display consistency
-column_labels = {
-    "year": "Year",
-    "month": "Month",
-    "hour": "Hour",
-    "incident": "Incident Type",
-    "min_delay": "Min Delay (minutes)",
-    "line": "Streetcar Line",
-    "season": "Season"
-}
+# Apply styling
+styled_table = table_styling(data)
+styled_table
 ```
 
 # Introduction
@@ -75,23 +72,35 @@ We observe that our dataset has several rows where the minimum delay time is ove
 #| message: false
 #| echo: false
 #| label: tbl-dataset-preview
-#| tbl-cap: "First five rows in the cleaned dataset with selected features"
+#| tbl-cap: "First first five rows in the cleaned dataset with selected features"
 
-import tabulate
-from IPython.display import Markdown
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
 
-# Select only the relevant columns and rows
-selected_columns = ["year", "month", "hour", "incident", "min_delay", "line", "season"]
-limited_row_data = data[selected_columns].head(5)
+# Preview first five rows and rename columns for readability
+preview_data = data.head(5).rename(columns={
+    "year": "Year",
+    "month": "Month",
+    "hour": "Hour",
+    "incident": "Incident Type",
+    "min_delay": "Min Delay (minutes)",
+    "line": "Streetcar Line",
+    "season": "Season"
+})
 
-# Display the table in Quarto as GitHub-style markdown
-preview_table = tabulate.tabulate(
-    limited_row_data,
-    headers="keys",
-    tablefmt="github",
-    showindex=False
+# Display as a table using matplotlib
+fig, ax = plt.subplots(figsize=(10, 2))
+ax.axis('off')
+table = ax.table(
+    cellText=preview_data.values,
+    colLabels=preview_data.columns,
+    cellLoc='center',
+    loc='center'
 )
-display(Markdown(f"```\n{preview_table}\n```"))
+table.auto_set_font_size(False)
+table.set_fontsize(9)
+table.scale(1.2, 1.2)
 ```
 
 The raw data is undergone a series of data cleaning steps to ensure adequate usability for the study. We first use the Janitor (@janitor) package to clean the data columns removing any spaces between them and using a consistent variable name convention. Next, we proceed to split the date field into year and month fields and do the same with the time field extracting the hour of day from it. Following this, we create a new column to denote the season based on the month of the year from the data. This is used for studying any seasonal variation in delays that may exist in our data.
@@ -111,26 +120,30 @@ After selecting the appropriate columns in our dataset, we proceed to drop the r
 #| label: tbl-selected-features
 #| tbl-cap: "Datatypes for the selected features from the cleaned dataset"
 
-import pandas as pd
-import tabulate
-from IPython.display import Markdown
+import matplotlib.pyplot as plt
 
-# Get feature names and their datatypes from the limited_row_data
-feature_dtype_table = pd.DataFrame({
-    "Feature": limited_row_data.columns,
-    "DataType": [str(dtype) for dtype in limited_row_data.dtypes]
+# Get feature names and datatypes from the previewed data
+features = preview_data.columns
+datatypes = [str(dtype) for dtype in preview_data.dtypes]
+
+# Create a DataFrame with feature names and datatypes
+table = pd.DataFrame({
+    "Feature": features,
+    "Data Type": datatypes
 })
 
-# Format the table using tabulate (like gt::gt in R)
-formatted_table = tabulate.tabulate(
-    feature_dtype_table,
-    headers="keys",
-    tablefmt="github",
-    showindex=False
+# Display the table using matplotlib
+fig, ax = plt.subplots(figsize=(6, 2))
+ax.axis('off')
+tbl = ax.table(
+    cellText=table.values,
+    colLabels=table.columns,
+    cellLoc='center',
+    loc='center'
 )
-
-# Display as a markdown code block (clean and PDF/HTML friendly)
-display(Markdown(f"```\n{formatted_table}\n```"))
+tbl.auto_set_font_size(False)
+tbl.set_fontsize(9)
+tbl.scale(1.2, 1.2)
 ```
 
 The data is collected and maintained by TTC and is updated monthly as reported by the website. Since the data is stored as a CSV, several numerical fields like the streetcar line or delay in minutes are saved as characters instead of numbers. Fields like date are saved as appropriate format of datetime type. 
@@ -151,30 +164,42 @@ The website doesn't provided information on how the data was sourced but we can 
 #| label: fig-delay-by-line
 #| fig-cap: Average annual delay in minutes for each streetcar line in 2023
 
-from plotnine import *
+import matplotlib.pyplot as plt
+import numpy as np
 
-# Group and summarize the data
-grp_data = (
-    data.groupby("line", as_index=False)
-        .agg(average_delay=("min_delay", "mean"))
-)
+# Grouping and summarizing the data
+grp_data = data.groupby("line", as_index=False)["min_delay"].mean()
+grp_data.rename(columns={"min_delay": "average_delay"}, inplace=True)
 
 # Create the bar plot
-(
-    ggplot(grp_data, aes(x='factor(line)', y='average_delay')) +
-    geom_bar(stat='identity', width=0.7, fill='dodgerblue', alpha=0.75) +
-    geom_text(aes(label='round(average_delay, 2)'), va='bottom', size=6, format_string='{:.2f}') +
-    labs(
-        title="Average delay in minutes by streetcar line",
-        x="Streetcar Line",
-        y="Average Delay in Minutes"
-    ) +
-    theme_minimal() +
-    theme(
-        axis_text_x=element_text(rotation=45, ha='right'),
-        plot_title=element_text(ha='center')
-    )
+fig, ax = plt.subplots(figsize=(8, 4))
+
+bars = ax.bar(
+    grp_data["line"].astype(str),
+    grp_data["average_delay"],
+    width=0.7,
+    alpha=0.75
 )
+
+# Add text labels above the bars
+for bar, delay in zip(bars, grp_data["average_delay"]):
+    height = bar.get_height()
+    ax.text(
+        bar.get_x() + bar.get_width() / 2,
+        height + 0.2,
+        f"{delay:.2f}",
+        ha="center",
+        va="bottom",
+        fontsize=7
+    )
+
+# Styling
+ax.set_title("Average delay in minutes by streetcar line", fontsize=12, weight="bold")
+ax.set_xlabel("Streetcar Line")
+ax.set_ylabel("Average Delay in Minutes")
+plt.xticks(rotation=45, ha='right')
+plt.tight_layout()
+plt.grid(visible=False)
 ```
 
 @fig-delay-by-line highlights the annual average delay in minutes for every streetcar line for the year 2023. The 300-series lines also called the Blue Network Routes (@ttcRoutesSchedule) are the night time streetcar lines that start at 12:00 AM. These average the most delays reaching at most 30 minutes for line 312.
@@ -189,33 +214,48 @@ The 500-series lines are the daytime lines that run from 8 AM. These streetcar a
 #| warning: false
 #| message: false
 
-from plotnine import *
+import matplotlib.pyplot as plt
 
-# Filter and summarize data for day shift (08:00 to 23:00)
+# Filter and summarize the data for the day shift (08:00–23:00)
 avg_delay_day_shift = (
-    data[(data["hour"] >= 8) & (data["hour"] <= 23)]
-    .groupby("hour", as_index=False)
-    .agg(average_delay=("min_delay", "mean"))
+    data.groupby("hour", as_index=False)["min_delay"]
+    .mean()
+    .rename(columns={"min_delay": "average_delay"})
+)
+avg_delay_day_shift = avg_delay_day_shift[
+    (avg_delay_day_shift["hour"] >= 8) & (avg_delay_day_shift["hour"] <= 23)
+]
+
+# Plot the graph
+fig, ax = plt.subplots(figsize=(8, 4))
+
+ax.plot(
+    avg_delay_day_shift["hour"],
+    avg_delay_day_shift["average_delay"],
+    color="dodgerblue",
+    alpha=0.5,
+    linewidth=1
+)
+ax.scatter(
+    avg_delay_day_shift["hour"],
+    avg_delay_day_shift["average_delay"],
+    color="dodgerblue",
+    edgecolor="dodgerblue",
+    s=30
 )
 
-# Create the plot
-(
-    ggplot(avg_delay_day_shift, aes(x="hour", y="average_delay")) +
-    geom_line(color="dodgerblue", size=1, alpha=0.5) +
-    geom_point(color="navy", size=2) +
-    geom_text(aes(label="round(average_delay, 1)"), nudge_y=0.25, size=6, format_string="{:.1f}") +
-    labs(
-        title="Average delay in minutes for morning shift",
-        x="Hour of Day",
-        y="Average Delay (Minutes)"
-    ) +
-    scale_x_continuous(breaks=list(range(8, 24))) +
-    theme_minimal() +
-    theme(
-        plot_title=element_text(ha="center"),
-        axis_text_x=element_text(rotation=45, ha="right")
-    )
-)
+# Add labels to points
+for x, y in zip(avg_delay_day_shift["hour"], avg_delay_day_shift["average_delay"]):
+    ax.text(x, y + 0.25, f"{y:.1f}", ha="center", va="bottom", fontsize=7)
+
+# Styling
+ax.set_title("Average delay in minutes for morning shift", fontsize=12, weight="bold", pad=10)
+ax.set_xlabel("Hour of Day")
+ax.set_ylabel("Average Delay (Minutes)")
+ax.set_xticks(range(8, 24))
+plt.xticks(rotation=45, ha='right')
+plt.grid(True, linestyle="--", linewidth=0.3, alpha=0.6)
+plt.tight_layout()
 ```
 @fig-delay-dayshift highlights the annual average delay in minutes experienced by the hour of day for streetcars that run during the day. We observe that there is high variability in the delays throughout the day with the minimum delay being about 12.2 minutes at 8 AM and the maximum being roughly 17 minutes at 11 PM.
 
@@ -228,33 +268,47 @@ avg_delay_day_shift = (
 #| warning: false
 #| message: false
 
-from plotnine import *
+import matplotlib.pyplot as plt
 
-# Filter and summarize data for night shift (00:00 to 07:00)
+# Filter the data for hours 00:00 to 07:00 (night shift), then summarize
 avg_delay_night_shift = (
-    data[(data["hour"] >= 0) & (data["hour"] <= 7)]
-    .groupby("hour", as_index=False)
-    .agg(average_delay=("min_delay", "mean"))
+    data[data["hour"].between(0, 7)]
+    .groupby("hour", as_index=False)["min_delay"]
+    .mean()
+    .rename(columns={"min_delay": "average_delay"})
 )
 
-# Create the plot
-(
-    ggplot(avg_delay_night_shift, aes(x="hour", y="average_delay")) +
-    geom_line(color="red", size=1, alpha=0.5) +
-    geom_point(color="darkred", size=2) +
-    geom_text(aes(label="round(average_delay, 1)"), vjust=2.5, size=6, format_string="{:.1f}") +
-    labs(
-        title="Average delay in minutes for night shift",
-        x="Hour of Day",
-        y="Average Delay (Minutes)"
-    ) +
-    scale_x_continuous(breaks=list(range(0, 8))) +
-    theme_minimal() +
-    theme(
-        plot_title=element_text(ha="center"),
-        axis_text_x=element_text(rotation=45, ha="right")
-    )
+# Plot the graph
+fig, ax = plt.subplots(figsize=(8, 4))
+
+ax.plot(
+    avg_delay_night_shift["hour"],
+    avg_delay_night_shift["average_delay"],
+    color="red",
+    alpha=0.5,
+    linewidth=1
 )
+ax.scatter(
+    avg_delay_night_shift["hour"],
+    avg_delay_night_shift["average_delay"],
+    color="darkred",
+    edgecolor="darkred",
+    s=30
+)
+
+# Add text labels to points
+for x, y in zip(avg_delay_night_shift["hour"], avg_delay_night_shift["average_delay"]):
+    ax.text(x, y - 0.5, f"{y:.1f}", ha="center", va="top", fontsize=7)
+
+# Styling
+ax.set_title("Average delay in minutes for night shift", fontsize=12, weight="bold", pad=10)
+ax.set_xlabel("Hour of Day")
+ax.set_ylabel("Average Delay (Minutes)")
+ax.set_xticks(range(0, 8))
+plt.xticks(rotation=45, ha='right')
+plt.grid(True, linestyle="--", linewidth=0.3, alpha=0.6)
+plt.tight_layout()
+
 ```
 @fig-delay-nightshift highlights the annual average delay in minutes experienced by the hour of day for streetcars that run during the night. We observe that there is maximum delay at 3 AM for roughly 25 minutes and the minimum delay being about 11.4 minutes at 7 AM.
 
@@ -267,40 +321,44 @@ avg_delay_night_shift = (
 #| warning: false
 #| message: false
 
-from plotnine import *
+import matplotlib.pyplot as plt
 
-# Group by incident type and calculate frequency and percentage
+# Group by incident and calculate frequencies and percentages
 freq_incidence = (
     data.groupby("incident", as_index=False)
     .size()
     .rename(columns={"size": "frequency"})
 )
+freq_incidence["percentage"] = freq_incidence["frequency"] / freq_incidence["frequency"].sum() * 100
 
-freq_incidence["percentage"] = (
-    freq_incidence["frequency"] / freq_incidence["frequency"].sum() * 100
+# Plot
+fig, ax = plt.subplots(figsize=(10, 5))
+
+bars = ax.bar(
+    freq_incidence["incident"],
+    freq_incidence["frequency"],
+    alpha=0.75
 )
 
-# Create the bar plot with percentage labels
-(
-    ggplot(freq_incidence, aes(x="incident", y="frequency")) +
-    geom_bar(stat="identity", fill="dodgerblue", alpha=0.75) +
-    geom_text(
-        aes(label="round(percentage, 1) + '%'"),
+# Add percentage labels
+for bar, pct in zip(bars, freq_incidence["percentage"]):
+    ax.text(
+        bar.get_x() + bar.get_width() / 2,
+        bar.get_height() + 1,
+        f"{pct:.1f}%",
+        ha="center",
         va="bottom",
-        size=6,
-        format_string="{:.1f}%"
-    ) +
-    labs(
-        title="Frequency and percentage of incident types in 2023",
-        x="Delay Incident Type",
-        y="Frequency"
-    ) +
-    theme_minimal() +
-    theme(
-        plot_title=element_text(ha="center"),
-        axis_text_x=element_text(rotation=45, ha="right", size=7)
+        fontsize=7
     )
-)
+
+# Styling
+ax.set_title("Frequency and percentage of incident types in 2023", fontsize=12, weight="bold", pad=10)
+ax.set_xlabel("Delay Incident Type")
+ax.set_ylabel("Frequency")
+plt.xticks(rotation=45, ha='right', fontsize=7)
+plt.tight_layout()
+plt.grid(visible=False)
+
 ```
 @fig-freq-delay-incidents highlights the total annual delays incurred based on incidents reported by TTC for the cause of said delay. We can that 23% of delay incidents were due to operational reasons amounting to a total of 2463 instances and rail switches were the least occurring with reported instances being only about 0.2% of all delays.
 
@@ -312,35 +370,43 @@ freq_incidence["percentage"] = (
 #| warning: false
 #| message: false
 
-from plotnine import *
+import matplotlib.pyplot as plt
 
-# Group by season and compute average delay
+# Group by season and calculate average delay
 delay_by_season = (
-    data.groupby("season", as_index=False)
-    .agg(average_delay=("min_delay", "mean"))
+    data.groupby("season", as_index=False)["min_delay"]
+    .mean()
+    .rename(columns={"min_delay": "average_delay"})
 )
 
-# Create bar plot with text labels
-(
-    ggplot(delay_by_season, aes(x="season", y="average_delay")) +
-    geom_bar(stat="identity", fill="dodgerblue", alpha=0.75) +
-    geom_text(
-        aes(label="round(average_delay, 2)"),
-        va="bottom",
-        size=6,
-        format_string="{:.2f}"
-    ) +
-    labs(
-        title="Average delay in minutes by seasons in a year",
-        x="Type of Season",
-        y="Average delay in minutes"
-    ) +
-    theme_minimal() +
-    theme(
-        plot_title=element_text(ha="center"),
-        axis_text_x=element_text(rotation=45, ha="right")
-    )
+# Plot
+fig, ax = plt.subplots(figsize=(8, 4))
+
+bars = ax.bar(
+    delay_by_season["season"],
+    delay_by_season["average_delay"],
+    alpha=0.75
 )
+
+# Add text labels above bars
+for bar, val in zip(bars, delay_by_season["average_delay"]):
+    ax.text(
+        bar.get_x() + bar.get_width() / 2,
+        bar.get_height() + 0.2,
+        f"{val:.2f}",
+        ha="center",
+        va="bottom",
+        fontsize=7
+    )
+
+# Styling
+ax.set_title("Average delay in minutes by seasons in a year", fontsize=12, weight="bold", pad=10)
+ax.set_xlabel("Type of Season")
+ax.set_ylabel("Average delay in minutes")
+plt.xticks(rotation=45, ha='right')
+plt.tight_layout()
+plt.grid(visible=False)
+
 ```
 
 @fig-delay-by-season highlights the annual average delay in minutes based on the seasons. We observe that were isn't as much variation between the streetcar delays between the fall, spring, summer and winter months with each averaging around 16 minutes delay.

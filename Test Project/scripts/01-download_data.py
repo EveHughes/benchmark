@@ -31,6 +31,4 @@ xlsx_resource = next(r for r in resources
 df = pd.read_excel(xlsx_resource["url"], engine="openpyxl")
 
 #### Save data ####
-output_path = Path("data/raw_data")
-output_path.mkdir(parents=True, exist_ok=True)
-df.to_csv(output_path / "unedited_ttc_streetcar_delay_2023.csv", index=False)
+df.to_csv("data/raw_data/unedited_ttc_streetcar_delay_2023.csv", index=False)
