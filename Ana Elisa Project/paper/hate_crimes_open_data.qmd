@@ -1,0 +1,384 @@
+---
+title: "The Irreparable Golden Rule: How Hate Crimes Have Risen Over the Past Six Years Across Toronto"
+author: Ana Elisa Lopez-Miranda
+thanks: "Code and data are available at: https://github.com/AnaElisaLopezMiranda/hatecrimes_opentorontodata."
+date: May 22, 2025
+date-format: long
+
+execute:
+    echo: false
+
+format: 
+    pdf:
+        df-print: kable
+        fig-pos: "H"
+number-sections: true
+bibliography: references.bib
+---
+# Abstract
+This paper looks at data surrounding reported hate crimes in Toronto's 158 Neighbourhoods over the past six years. The data visualization shows that hate crimes are occurring at an increasing rate. The people targeted are the Jewish community for their religion, Chinese individuals for their ethnicity, Black individuals for their race, gay individuals for their sexual orientation, and transgender women for their gender. Government officials should become more concerned over the increasing rate and take actions to protect the people groups being targeted. 
+
+# Introduction
+
+The phrase 'hate crimes' was coined in the 1980's to describe incidents happening to African-Americans, Asians, and Jews [@OEmbracingEmbracingMulticulturalism:AddressingHateCrimes]. A hate crime is a criminal offence committed against a person or property motivated in whole or in part by bias, prejudice or hate based on race, national, or ethnic origin, language, colour, religion, sex, age, mental or physical disability, sexual orientation or gender identity or expression of any similar factors [@OpenDataPortal]. There was a steep increase in usage of the phrase in books and articles from the 1980s until a peak in 2004. The usaage has been steadily decreasing (except for a brief increase in 2015) till now. However, contrary to this metric, according to data from Open Data Toronto, there has been a steady increase in reported hate crimes over the past 6 years (20218-2024). The main question this poses is: who, why, and where. The data shows that the group most targeted for physical differences is Black individuals. Those most targeted for cultural reasons are Chinese individuals. The group most targeted for religious reasons is the Jewish community. The group most targeted based on sexual orientation is gay individuals. The group most targeted based on gender identity is transgender women. The most common motivation for hate crimes is religious bias. The area with the highest hate crime rate is Yonge-Bay Corridor. The most common location for attacks is on streets, roadways, or highways.
+
+In this paper, the programming language Python was used [@numpy]. Libraries that were used include numpy (Harries et al. 202), matplotlib [@matplotlib], pandas [@pandas], and polars [@polars].
+
+This paper will first give summary statistics, explorary analysis, and then conclude with a discussion.
+
+
+# Data {#sec-data}
+
+Data is provided by Toronto Hate Crime Unit and is obtained from the OpenData Toronto Portal. It consists of reported hate crimes from 2018-2024. There is no missing data. 
+
+The following table illustrates the data used in the paper. The omitted entries were: _Id, OCCURRENCE_YEAR, OCCURRENCE_TIME, REPORTED_YEAR, REPORTED_TIME, HOOD_158, NEIGHBOURHOOD_140, HOOD_140. _Id was ommitted because it contained individual Id's for each occurence. OCCURRENCE_YEAR was ommitted for its redundancy. OCCURENCE_TIME was ommitted for its lack of usability. REPORTED_YEAR was ommitted for its redundancy. REPORTED_TIME was ommitted for its lack of usability. HOOD_158 was ommitted for its redundancy. NEIGHBOURHOOD_140 was ommitted since it is the outdated neighbourhoods of Toronto. HOOD_140 was ommitted for the same reason as above. 
+
+```{python}
+#| tbl-cap: "Hate Crime Data Dictionary"
+#| tbl-column-widths: [0.2, 0.6, 0.2]
+#| results: 'asis'
+
+import pandas as pd
+
+data = [
+    ["OCCURRENCE_DATE", "Date Offence Occurred."],
+    ["REPORTED_DATE", "Date Offence was Reported."],
+    ["DIVISION", "Police Division where Offence Occurred."],
+    ["LOCATION_TYPE", "Location Type of the Offence."],
+    ["AGE_BIAS", "A Hate Crime committed because of age."],
+    ["MENTAL_OR_PHYSICAL_DISABILITY", "Crime committed because of disability."],
+    ["RACE_BIAS", "Crime committed because of race."],
+    ["ETHNICITY_BIAS", "Crime committed because of ethnicity."],
+    ["LANGUAGE_BIAS", "Crime committed because of language."],
+    ["RELIGION_BIAS", "Crime committed because of religion."],
+    ["SEXUAL_ORIENTATION_BIAS", "Crime committed because of sexual orientation."],
+    ["GENDER_BIAS", "Crime committed because of gender."],
+    ["PRIMARY_OFFENCE", "The Offence committed."],
+    ["NEIGHBOURHOOD_158", "One of Toronto's 158 neighbourhoods."],
+    ["ARREST_MADE", "When a charge is laid or recommended."]
+]
+
+df = pd.DataFrame(data, columns=["Field Name", "Description"])
+df
+```
+
+
+# Results
+
+```{python}
+#| label: tbl-yearly_count_preview
+#| tbl-cap: "Count"
+
+#set up
+import polars as pl
+import matplotlib.pyplot as plt
+pl.Config.set_tbl_hide_column_data_types(True)  
+
+#reading in & reformatting
+raw_data = pl.read_csv("bias_counts_summary.csv")
+
+#creating table
+raw_data
+```
+Table 2. Count shows that 43% of hate crimes are motivated by religious reasons. This is followed by 27% occuring for racial reasons. 
+
+The following tables will show what makes up each individual bias.
+```{python}
+#| label: tbl-yearly_count__gender_preview
+#| tbl-cap: "Count for Gender Bias"
+
+#set up
+import polars as pl
+import matplotlib.pyplot as plt
+pl.Config.set_tbl_hide_column_data_types(True)  
+pl.Config.set_fmt_str_lengths(None)
+
+#reading in & reformatting
+raw_data = pl.read_csv("gender_bias_summary.csv")
+
+#creating table
+raw_data
+```
+Table 3. Count for Gender Bias shows that 35% of hate crimes committed based on gender reasons are against transgender Women. The second group most affected are Women (30%). 
+
+```{python}
+#| label: tbl-yearly_count__sexual_preview
+#| tbl-cap: "Count for Sexual Orientation Bias"
+
+#set up
+import polars as pl
+import matplotlib.pyplot as plt
+pl.Config.set_tbl_hide_column_data_types(True)  
+pl.Config.set_fmt_str_lengths(None)
+
+#reading in & reformatting
+raw_data = pl.read_csv("sexual_bias_summary.csv")
+
+#creating table
+raw_data
+```
+Table 4. Count for Sexual Orientation Bias shows that 42% of hate crimes committed on the basis of sexual orientation are against gay individuals. This is followed shortly behind by members of 2SLGBTQ+ (38%).
+```{python}
+#| label: tbl-yearly_count__language_preview
+#| tbl-cap: "Count for Language Bias"
+
+#set up
+import polars as pl
+import matplotlib.pyplot as plt
+pl.Config.set_tbl_hide_column_data_types(True)  
+pl.Config.set_fmt_str_lengths(None)
+pl.Config.set_tbl_rows(None)
+
+#reading in & reformatting
+raw_data = pl.read_csv("language_bias_summary.csv")
+
+#creating table
+raw_data
+```
+Table 5. Count for Language Bias shows that only three hate crimes have occurred on the basis of language over the past six years. 
+
+```{python}
+#| label: fig-ethnicity_chart
+#| fig-cap: "Ethnicity Bias Bar-Chart"
+
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Load the data
+df = pd.read_csv("ethnicity_bias_summary.csv")
+
+# Plot
+plt.figure(figsize=(14, 6))
+plt.bar(df["Ethnicity_Offence"], df["Count"], color="orange")
+plt.xlabel("Ethnicity")
+plt.ylabel("Count")
+plt.title("Ethnicity Bias by Count")
+plt.xticks(rotation=45, ha="right")
+plt.tight_layout()
+plt.show()
+```
+Figure 1. Ethnicity Bias Bar-Chart illustrates the frequency of hate crimes on the basis of ethnicity. The top five ethnicities that are targeted in order are Chinese (20%), Indian (19%), Israeli (13%), Palestinian (11%), and Ukrainian (6%). 
+
+```{python}
+#| label: fig-race_chart
+#| fig-cap: "Race Bias Bar-Chart"
+
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Load the data
+df = pd.read_csv("race_bias_summary.csv")
+
+# Plot
+plt.figure(figsize=(14, 6))
+plt.bar(df["Race_Offence"], df["Count"], color="orange")
+plt.xlabel("Race")
+plt.ylabel("Count")
+plt.title("Race Bias by Count")
+plt.xticks(rotation=45, ha="right")
+plt.tight_layout()
+plt.show()
+```
+Figure 2. Race Bias Bar-Chart illustrates the frequency of hate crimes on the basis of race. The race most targeted are Black individuals (68%). The next three in order are East/Southeast Asians (13%), South Asians (8%), and White individuals (4%).
+
+
+```{python}
+#| label: fig-religion_chart
+#| fig-cap: "Religion Bias Bar-Chart"
+
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Load the data
+df = pd.read_csv("religion_bias_summary.csv")
+
+# Plot
+plt.figure(figsize=(14, 6))
+plt.bar(df["Religion_Offence"], df["Count"], color="orange")
+plt.xlabel("Religion")
+plt.ylabel("Count")
+plt.title("Religion Bias by Count")
+plt.xticks(rotation=45, ha="right")
+plt.tight_layout()
+plt.show()
+```
+Figure 3. Religion Bias Bar-Chart shows that the religion most targeted is the Jewish community at a 68% followed by the Muslim community at 16%. 
+
+```{python}
+#| label: tbl-yearly_count__arrest_preview
+#| tbl-cap: "Count for Arrest"
+
+#set up
+import polars as pl
+import matplotlib.pyplot as plt
+pl.Config.set_tbl_hide_column_data_types(True)  
+pl.Config.set_fmt_str_lengths(None)
+
+#reading in & reformatting
+raw_data = pl.read_csv("arrest_summary.csv")
+
+#creating table
+raw_data
+```
+Table 7. Count for Arrest shows the proportion of offences that result in an arrest (20%) and the proportion of offences that do not result in an arrest (80%).
+```{python}
+#| label: fig-division_chart
+#| fig-cap: "Division Bar-Chart"
+
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Load data
+df = pd.read_csv("division_arrest_summary.csv")
+
+# Pivot to wide format: one column for Yes, one for No
+pivot_df = df.pivot(index="DIVISION", columns="ARREST_MADE", values="Count").fillna(0)
+
+# Sort divisions alphabetically (optional)
+pivot_df = pivot_df.sort_index()
+
+# Create bar chart
+ind = range(len(pivot_df))
+width = 0.6
+
+plt.figure(figsize=(14, 6))
+p1 = plt.bar(ind, pivot_df["No"], width, color="red")
+p2 = plt.bar(ind, pivot_df["Yes"], width, bottom=pivot_df["No"], color="green")
+
+# Labeling
+plt.xlabel("Division")
+plt.ylabel("Count")
+plt.title("Arrest Outcome by Division")
+plt.xticks(ind, pivot_df.index, rotation=45, ha="right")
+plt.legend((p1[0], p2[0]), ('Not Arrested', 'Arrested'))
+plt.tight_layout()
+plt.show()
+
+```
+Figure 4. Division Bar-Chart shows a distribution of all the divisions where offences occurred. Additionally, the proportion of arrests made for each division is also shown. Green represents an arrest happened and red represents an arrest not happening. In all divisions except for D51, an arrest happened around 20% of the time. The division with the most offenses is D32, followed by D52, D51, and D55. 
+
+```{python}
+#| label: fig-location_chart
+#| fig-cap: "Location Bar-Chart"
+
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Load the data
+df = pd.read_csv("location_summary.csv")
+
+# Plot
+plt.figure(figsize=(14, 6))
+plt.bar(df["Location_Type"], df["Count"], color="orange")
+plt.xlabel("Location")
+plt.ylabel("Count")
+plt.title("Location by Count")
+plt.xticks(rotation=45, ha="right")
+plt.tight_layout()
+plt.show()
+```
+Figure 5. Location Bar-Chart shows the frequency of offences that happen at each location. The location with the most offences is on the streets, roadways, and highway (23%) and the location with the least offences is Non-Commercial/Non-Profit (0.6%).
+
+
+```{python}
+#| label: fig-offence_chart
+#| fig-cap: "Primary Offence Bar-Chart"
+
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Load the data
+df = pd.read_csv("primary_offence_summary.csv")
+
+# Plot
+plt.figure(figsize=(14, 6))
+plt.bar(df["Primary_Offence"], df["Count"], color="orange")
+plt.xlabel("Primary Offence")
+plt.ylabel("Count")
+plt.title("Primary Offence by Count")
+plt.xticks(rotation=45, ha="right")
+plt.tight_layout()
+plt.show()
+```
+Figure 6. Primary Offence Bar-Chart shows that the most frequent offence that accompanies a hate crime is Mischief under $5000 (47%) followed by Assault (19%).
+
+```{python}
+#| label: fig-composition_chart
+#| fig-cap: "Neighbourhoods Bar-Chart"
+
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Load the data
+df = pd.read_csv("neighbourhood_summary.csv")
+
+# Sort by count
+df_sorted = df.sort_values("Count", ascending=False)
+
+# Get top 10 and bottom 10
+df_top10 = df_sorted.head(10)
+df_bottom10 = df_sorted.tail(10)
+
+# Combine for plotting
+df_combined = pd.concat([df_top10, df_bottom10])
+
+# Plot
+plt.figure(figsize=(14, 6))
+plt.bar(df_combined["Neighbourhood_158"], df_combined["Count"], color="orange")
+plt.xlabel("Neighbourhood")
+plt.ylabel("Count")
+plt.title("Top 10 and Bottom 10 Neighbourhoods by Count")
+plt.xticks(rotation=45, ha="right")
+plt.tight_layout()
+plt.show()
+```
+Figure 7. Neighbourhood Bar-Chart shows the top 10 neighbourhoods with the most offences and the bottom 10 neighbourhood with the least offences. The neighbourhood with the most offences is Yonge-Bay Corridor. The neighbourhood with the least offences is Parkwoods O'Connor Hills. 
+
+```{python}
+#| label: fig-all_plot
+#| fig-cap: "Hate Crimes Yearly Count"
+
+#set up
+import polars as pl
+import matplotlib.pyplot as plt
+
+# Load the data
+df = pl.read_csv("yearly_counts.csv")
+
+# Extract year and count
+years = df["Year"].to_numpy()
+counts = df["Count"].to_numpy()
+
+# Plot
+plt.figure(figsize=(10, 6))
+plt.plot(years, counts, marker='o', label="Yearly Hate Crimes")
+plt.title("Hate Crimes Occurred")
+plt.xlabel("Year")
+plt.ylabel("Hate Crimes Count")
+plt.grid()
+plt.legend(loc='upper left')
+plt.tight_layout()
+plt.show()
+```
+Figure 8. Hate Crimes Yearly Count shows the number of offences for each year from 2014-2024. The line illustrate the upward trend of occurrences. 
+
+
+# Discussion
+
+The paper showed who is primarily targeted, where they are primarily targeted and why they are primarily targeted.
+
+The most common motivation for a hate crime is based on religion. The people most affected by crimes committed on the basis of religion is the Jewish community. The second highest motivation for a hate crime is based on race. The people most affected by crimes committed on the basis of race are Black individuals. Black individuals are the victims of 68% of the offences. The third highest motivation for hate crimes is sexual orientation. The people most affected by crimes committed on the basis of sexual orientation are gay individuals. The fourth highest motivation for hate crimes is ethnicity. The people most affected by crimes committed on the basis of ethnicity are Chinese individuals. This is followed by Israeli, Palestatian, and Ukranian individuals. The fifth highest motivation for a hate crime is based on gender. The people most affected by crimes committed on the basis of gender are transgender Women. The final three bias are language, mental and physical disability, and age. These three make up 0.3% of all offences. Age specifically has had no occurrence over the past six years. 
+
+Figure 7. shows 10 neighbourhoods with the highest offences and the 10 neighbourhoods with the lowest offences. Going through Toronto Open Data Portal, one may look at the features that people tend to believe may contribute to high rates of hate crimes. These may be: immigration, income, and the primary spoken language. Remarkably, when you compare the neighbourhood with the highest occurrence of hate crimes--Young-Bay Corridor-- with the neighbourhood with the lowest occurrence of hate crimes--Parkwoods O'Connor Hills--one finds that both have a mean income of $20,000-40,000/year and both have a primary language of Mandarin. The one difference is that Yonge-Bay Corridor has the highest immigration rate from China while Parkwoods O'Connor Hills has the highest immigration rate from Philippines followed closely by China. One aspect that may contribute to the difference in occurrences is where the neighbourhood is located. The top 10 neighbourhoods tend to be centered around downtown Toronto while the bottom 10 neighbourhoods tend to be closer to the surburbs. An implication may be that the locals do not contribute to the occurences of hate crimes. Rather, foot traffic and a daily influx of people may be the contributing factor. 
+
+According to Table 6., an arrest occured 22% of the time. Although, Toronto Police Service claims there has been an increase in arrests [@TorontoPolice], this is still a low number. Figure 4. showed that arrests uniformly occur 20% of the time across all divisions except for D52 where they occur 35% of the time. Notably, this division contains Bay Street Corridor and Waterfront Communities-The Island -- the former of which is the neighbourhood with the highest number of offences. The division with the highest number of occurences is D32. However, D32 contains 16 neighbourhoods compared to D52 only containing 2 neighbourhoods. 
+
+## Limitations and Future Research
+
+Unfortunately, there is a delay between when the crimes were reported and when the crimes occured. Additionally, there is an unknown number of crimes that are never reported. Thus, the data is bias. Furthermore, the data was gathered between 2018-2024. However, the data contains occurences that happened before 2018. Thus, our data is inherently left skewed with some occurrences as early as 2014. Something to note is that an increase in reported hate crimes may not necessarily mean an increase in hate crimes. With a greater education of hate crimes comes a greater awareness of hate crimes which may result in people who would not have previously reported to come forward. The time interval is too limited to make absolute conclusions. After a greater period of time has passed, one may be able to see if eventually the reports starts to decrease -- signifying not a decrease in reports but a decrease in crimes. 
+
+Another limitation is that the data does not include occurrences that have been deemed unfounded or classified as hate incidents [@OpenDataPortal].
+
+Future studies could research into the relationship between hate crimes and the neighbourhoods they frequently occur in. Additionally, future studies could be done to test effective measures in preventing hate crimes. 
+
+# References {-}

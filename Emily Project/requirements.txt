@@ -1,0 +1,10 @@
+requests
+datetime
+matplotlib
+numpy
+pandas
+polars
+pydantic
+seaborn
+pointblank
+pyarrow
