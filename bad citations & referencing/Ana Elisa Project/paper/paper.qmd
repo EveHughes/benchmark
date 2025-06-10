@@ -2,7 +2,7 @@
 title: "The Irreparable Golden Rule: How Hate Crimes Have Risen Over the Past Six Years Across Toronto"
 author: Ana Elisa Lopez-Miranda
 thanks: "Code and data are available at: https://github.com/AnaElisaLopezMiranda/hatecrimes_opentorontodata."
-date: May 22, 2025
+date: 05/22/25
 date-format: long
 
 execute:
@@ -13,16 +13,15 @@ format:
         df-print: kable
         fig-pos: "H"
 number-sections: true
-bibliography: references.bib
 ---
 # Abstract
 This paper looks at data surrounding reported hate crimes in Toronto's 158 Neighbourhoods over the past six years. The data visualization shows that hate crimes are occurring at an increasing rate. The people targeted are the Jewish community for their religion, Chinese individuals for their ethnicity, Black individuals for their race, gay individuals for their sexual orientation, and transgender women for their gender. Government officials should become more concerned over the increasing rate and take actions to protect the people groups being targeted. 
 
 # Introduction
 
-The phrase 'hate crimes' was coined in the 1980's to describe incidents happening to African-Americans, Asians, and Jews [@OEmbracingEmbracingMulticulturalism:AddressingHateCrimes]. A hate crime is a criminal offence committed against a person or property motivated in whole or in part by bias, prejudice or hate based on race, national, or ethnic origin, language, colour, religion, sex, age, mental or physical disability, sexual orientation or gender identity or expression of any similar factors [@OpenDataPortal]. There was a steep increase in usage of the phrase in books and articles from the 1980s until a peak in 2004. The usaage has been steadily decreasing (except for a brief increase in 2015) till now. However, contrary to this metric, according to data from Open Data Toronto, there has been a steady increase in reported hate crimes over the past 6 years (20218-2024). The main question this poses is: who, why, and where. The data shows that the group most targeted for physical differences is Black individuals. Those most targeted for cultural reasons are Chinese individuals. The group most targeted for religious reasons is the Jewish community. The group most targeted based on sexual orientation is gay individuals. The group most targeted based on gender identity is transgender women. The most common motivation for hate crimes is religious bias. The area with the highest hate crime rate is Yonge-Bay Corridor. The most common location for attacks is on streets, roadways, or highways.
+The phrase 'hate crimes' was coined in the 1980's to describe incidents happening to African-Americans, Asians, and Jews. A hate crime is a criminal offence committed against a person or property motivated in whole or in part by bias, prejudice or hate based on race, national, or ethnic origin, language, colour, religion, sex, age, mental or physical disability, sexual orientation or gender identity or expression of any similar factors. There was a steep increase in usage of the phrase in books and articles from the 1980s until a peak in 2004. The usaage has been steadily decreasing (except for a brief increase in 2015) till now. However, contrary to this metric, according to data from Open Data Toronto, there has been a steady increase in reported hate crimes over the past 6 years (20218-2024). The main question this poses is: who, why, and where. The data shows that the group most targeted for physical differences is Black individuals. Those most targeted for cultural reasons are Chinese individuals. The group most targeted for religious reasons is the Jewish community. The group most targeted based on sexual orientation is gay individuals. The group most targeted based on gender identity is transgender women. The most common motivation for hate crimes is religious bias. The area with the highest hate crime rate is Yonge-Bay Corridor. The most common location for attacks is on streets, roadways, or highways.
 
-In this paper, the programming language Python was used [@numpy]. Libraries that were used include numpy (Harries et al. 202), matplotlib [@matplotlib], pandas [@pandas], and polars [@polars].
+In this paper, the programming language Python was used. Libraries that were used include numpy (Harries et al. 202), matplotlib, pandas, and polars.
 
 This paper will first give summary statistics, explorary analysis, and then conclude with a discussion.
 
@@ -75,7 +74,7 @@ import matplotlib.pyplot as plt
 pl.Config.set_tbl_hide_column_data_types(True)  
 
 #reading in & reformatting
-raw_data = pl.read_csv("bias_counts_summary.csv")
+raw_data = pl.read_csv("../data/summary/bias_counts_summary.csv")
 
 #creating table
 raw_data
@@ -94,7 +93,7 @@ pl.Config.set_tbl_hide_column_data_types(True)
 pl.Config.set_fmt_str_lengths(None)
 
 #reading in & reformatting
-raw_data = pl.read_csv("gender_bias_summary.csv")
+raw_data = pl.read_csv("../data/summary/gender_bias_summary.csv")
 
 #creating table
 raw_data
@@ -112,7 +111,7 @@ pl.Config.set_tbl_hide_column_data_types(True)
 pl.Config.set_fmt_str_lengths(None)
 
 #reading in & reformatting
-raw_data = pl.read_csv("sexual_bias_summary.csv")
+raw_data = pl.read_csv("../data/summary/sexual_bias_summary.csv")
 
 #creating table
 raw_data
@@ -130,7 +129,7 @@ pl.Config.set_fmt_str_lengths(None)
 pl.Config.set_tbl_rows(None)
 
 #reading in & reformatting
-raw_data = pl.read_csv("language_bias_summary.csv")
+raw_data = pl.read_csv("../data/summary/language_bias_summary.csv")
 
 #creating table
 raw_data
@@ -145,7 +144,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 # Load the data
-df = pd.read_csv("ethnicity_bias_summary.csv")
+df = pd.read_csv("../data/summary/ethnicity_bias_summary.csv")
 
 # Plot
 plt.figure(figsize=(14, 6))
@@ -167,7 +166,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 # Load the data
-df = pd.read_csv("race_bias_summary.csv")
+df = pd.read_csv("../data/summary/race_bias_summary.csv")
 
 # Plot
 plt.figure(figsize=(14, 6))
@@ -190,7 +189,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 # Load the data
-df = pd.read_csv("religion_bias_summary.csv")
+df = pd.read_csv("../data/summary/religion_bias_summary.csv")
 
 # Plot
 plt.figure(figsize=(14, 6))
@@ -215,7 +214,7 @@ pl.Config.set_tbl_hide_column_data_types(True)
 pl.Config.set_fmt_str_lengths(None)
 
 #reading in & reformatting
-raw_data = pl.read_csv("arrest_summary.csv")
+raw_data = pl.read_csv("../data/summary/arrest_summary.csv")
 
 #creating table
 raw_data
@@ -229,7 +228,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 # Load data
-df = pd.read_csv("division_arrest_summary.csv")
+df = pd.read_csv("../data/summary/division_arrest_summary.csv")
 
 # Pivot to wide format: one column for Yes, one for No
 pivot_df = df.pivot(index="DIVISION", columns="ARREST_MADE", values="Count").fillna(0)
@@ -265,7 +264,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 # Load the data
-df = pd.read_csv("location_summary.csv")
+df = pd.read_csv("../data/summary/location_summary.csv")
 
 # Plot
 plt.figure(figsize=(14, 6))
@@ -288,7 +287,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 # Load the data
-df = pd.read_csv("primary_offence_summary.csv")
+df = pd.read_csv("../data/summary/primary_offence_summary.csv")
 
 # Plot
 plt.figure(figsize=(14, 6))
@@ -310,7 +309,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 # Load the data
-df = pd.read_csv("neighbourhood_summary.csv")
+df = pd.read_csv("../data/summary/neighbourhood_summary.csv")
 
 # Sort by count
 df_sorted = df.sort_values("Count", ascending=False)
@@ -343,7 +342,7 @@ import polars as pl
 import matplotlib.pyplot as plt
 
 # Load the data
-df = pl.read_csv("yearly_counts.csv")
+df = pl.read_csv("../data/summary/yearly_counts.csv")
 
 # Extract year and count
 years = df["Year"].to_numpy()
@@ -371,13 +370,13 @@ The most common motivation for a hate crime is based on religion. The people mos
 
 Figure 7. shows 10 neighbourhoods with the highest offences and the 10 neighbourhoods with the lowest offences. Going through Toronto Open Data Portal, one may look at the features that people tend to believe may contribute to high rates of hate crimes. These may be: immigration, income, and the primary spoken language. Remarkably, when you compare the neighbourhood with the highest occurrence of hate crimes--Young-Bay Corridor-- with the neighbourhood with the lowest occurrence of hate crimes--Parkwoods O'Connor Hills--one finds that both have a mean income of $20,000-40,000/year and both have a primary language of Mandarin. The one difference is that Yonge-Bay Corridor has the highest immigration rate from China while Parkwoods O'Connor Hills has the highest immigration rate from Philippines followed closely by China. One aspect that may contribute to the difference in occurrences is where the neighbourhood is located. The top 10 neighbourhoods tend to be centered around downtown Toronto while the bottom 10 neighbourhoods tend to be closer to the surburbs. An implication may be that the locals do not contribute to the occurences of hate crimes. Rather, foot traffic and a daily influx of people may be the contributing factor. 
 
-According to Table 6., an arrest occured 22% of the time. Although, Toronto Police Service claims there has been an increase in arrests [@TorontoPolice], this is still a low number. Figure 4. showed that arrests uniformly occur 20% of the time across all divisions except for D52 where they occur 35% of the time. Notably, this division contains Bay Street Corridor and Waterfront Communities-The Island -- the former of which is the neighbourhood with the highest number of offences. The division with the highest number of occurences is D32. However, D32 contains 16 neighbourhoods compared to D52 only containing 2 neighbourhoods. 
+According to Table 6., an arrest occured 22% of the time. Although, Toronto Police Service claims there has been an increase in arrests, this is still a low number. Figure 4. showed that arrests uniformly occur 20% of the time across all divisions except for D52 where they occur 35% of the time. Notably, this division contains Bay Street Corridor and Waterfront Communities-The Island -- the former of which is the neighbourhood with the highest number of offences. The division with the highest number of occurences is D32. However, D32 contains 16 neighbourhoods compared to D52 only containing 2 neighbourhoods. 
 
 ## Limitations and Future Research
 
 Unfortunately, there is a delay between when the crimes were reported and when the crimes occured. Additionally, there is an unknown number of crimes that are never reported. Thus, the data is bias. Furthermore, the data was gathered between 2018-2024. However, the data contains occurences that happened before 2018. Thus, our data is inherently left skewed with some occurrences as early as 2014. Something to note is that an increase in reported hate crimes may not necessarily mean an increase in hate crimes. With a greater education of hate crimes comes a greater awareness of hate crimes which may result in people who would not have previously reported to come forward. The time interval is too limited to make absolute conclusions. After a greater period of time has passed, one may be able to see if eventually the reports starts to decrease -- signifying not a decrease in reports but a decrease in crimes. 
 
-Another limitation is that the data does not include occurrences that have been deemed unfounded or classified as hate incidents [@OpenDataPortal].
+Another limitation is that the data does not include occurrences that have been deemed unfounded or classified as hate incidents.
 
 Future studies could research into the relationship between hate crimes and the neighbourhoods they frequently occur in. Additionally, future studies could be done to test effective measures in preventing hate crimes. 
 

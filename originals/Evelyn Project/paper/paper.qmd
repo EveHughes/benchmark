@@ -53,7 +53,7 @@ pl.Config.set_tbl_hide_column_data_types(True)
 pl.Config(tbl_width_chars=1000)
 
 #reading in of data & removing unneeded info
-date = str(datetime.today()).split()[0]
+date = "2025-05-15"
 
 raw_data = pl.read_csv("../data/01-raw_data/" + date + "_ob_report_2019.csv")
 for key in raw_data.columns:

@@ -53,7 +53,7 @@ pl.Config.set_tbl_hide_column_data_types(True)
 pl.Config(tbl_width_chars=1000)
 
 #reading in of data & removing unneeded info
-date = str(datetime.today()).split()[0]
+date = "2025-05-15"
 
 raw_data = pl.read_csv("../data/01-raw_data/" + date + "_ob_report_2019.csv")
 for key in raw_data.columns:
@@ -85,7 +85,7 @@ For this analysis, the variables of interest are the yearly number of outbreaks 
 
 ## Analysis Data
 ### Yearly Outbreak Count {#sec-yearly_count}
-To simulate, test, download, and clean the Outbreaks in Toronto Healthcare Institutions (2019-2024), the programming language Python was used [@python]. Specific libraries that assisted the analysis include `numpy` [@numpy], `matplotlib` [@matplotlib], and `polars` [@polars]. 
+To simulate, test, download, and clean the Outbreaks in Toronto Healthcare Institutions (2019-2024), the programming language Python was used. Specific libraries that assisted the analysis include `numpy` [@numpy], `matplotlib` [@matplotlib], and `polars` [@polars]. 
 	
 For each year, the number of cases for each causative agent was aggregated. The causative agents of interest were: Coronavirus, Influenza, Parainfluenza (PIV), Respiratory Syncytial Virus (RSV), Metapneumovirus (MPV), and Rhinovirus (RV). 
 Instances of Coronavirus and COVID-19 were grouped together under the category “Coronavirus”. Influenza A and Influenza B were additionally grouped together under the category “Influenza”. 
