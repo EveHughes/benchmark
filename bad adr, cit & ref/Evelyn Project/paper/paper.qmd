@@ -85,7 +85,7 @@ For this analysis, the variables of interest are the yearly number of outbreaks 
 
 ## Analysis Data
 ### Yearly Outbreak Count {#sec-yearly_count}
-To simulate, test, download, and clean the Outbreaks in Toronto Healthcare Institutions (2019-2024), the programming language Python was used [@python]. Specific libraries that assisted the analysis include `numpy` [@numpy], `matplotlib` [@matplotlib], and `polars` [@polars]. 
+To simulate, test, download, and clean the Outbreaks in Toronto Healthcare Institutions (2019-2024), the programming language Python was used. Specific libraries that assisted the analysis include `numpy` [@numpy], `matplotlib` [@matplotlib], and `polars` [@polars]. 
 	
 For each year, the number of cases for each causative agent was aggregated. The causative agents of interest were: Coronavirus, Influenza, Parainfluenza (PIV), Respiratory Syncytial Virus (RSV), Metapneumovirus (MPV), and Rhinovirus (RV). 
 Instances of Coronavirus and COVID-19 were grouped together under the category “Coronavirus”. Influenza A and Influenza B were additionally grouped together under the category “Influenza”. 

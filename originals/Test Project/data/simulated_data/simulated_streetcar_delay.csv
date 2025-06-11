@@ -1,0 +1,101 @@
+year,month,hour,delay_mins,streetcar_line,reason
+2023,7,18,34,505,Weather
+2023,5,17,71,311,Traffic
+2023,8,17,106,506,Route Change
+2023,3,13,116,504,Emergency
+2023,5,12,36,504,Traffic
+2023,10,11,106,311,Traffic
+2023,10,14,112,511,Weather
+2023,11,22,94,505,Weather
+2023,11,16,51,304,Weather
+2023,6,18,102,504,Emergency
+2023,2,3,49,305,Emergency
+2023,6,12,36,9000,Traffic
+2023,6,14,10,9000,Route Change
+2023,8,0,106,304,Route Change
+2023,6,11,92,304,Route Change
+2023,5,10,109,304,Route Change
+2023,10,12,86,311,Traffic
+2023,9,19,14,9000,Emergency
+2023,9,22,74,511,Route Change
+2023,2,9,86,304,Traffic
+2023,1,18,116,505,Route Change
+2023,4,12,103,506,Emergency
+2023,6,3,99,506,Route Change
+2023,9,8,20,304,Weather
+2023,4,14,25,311,Emergency
+2023,2,6,102,9000,Weather
+2023,10,10,54,304,Emergency
+2023,10,21,3,305,Route Change
+2023,11,16,70,511,Emergency
+2023,8,20,102,505,Weather
+2023,6,2,57,311,Traffic
+2023,5,10,111,9000,Emergency
+2023,4,17,108,505,Traffic
+2023,9,12,27,504,Route Change
+2023,1,4,68,506,Traffic
+2023,1,7,30,506,Weather
+2023,3,22,38,505,Weather
+2023,10,22,115,504,Weather
+2023,10,4,9,9000,Route Change
+2023,7,4,114,506,Route Change
+2023,6,0,40,511,Route Change
+2023,10,17,76,505,Weather
+2023,9,14,95,305,Route Change
+2023,10,12,52,305,Weather
+2023,6,18,73,505,Route Change
+2023,11,2,19,511,Traffic
+2023,8,1,62,511,Emergency
+2023,7,7,52,304,Traffic
+2023,4,7,28,511,Route Change
+2023,4,12,2,311,Route Change
+2023,4,5,16,506,Route Change
+2023,2,4,18,305,Route Change
+2023,7,21,20,9000,Weather
+2023,2,11,72,505,Route Change
+2023,11,12,26,305,Traffic
+2023,6,9,48,9000,Traffic
+2023,11,5,30,305,Traffic
+2023,7,21,85,305,Route Change
+2023,8,3,95,506,Emergency
+2023,4,13,92,505,Traffic
+2023,10,17,7,304,Emergency
+2023,5,22,61,505,Emergency
+2023,5,2,37,305,Weather
+2023,2,8,67,505,Traffic
+2023,2,10,26,305,Weather
+2023,10,7,116,511,Emergency
+2023,10,21,25,511,Route Change
+2023,10,0,105,511,Route Change
+2023,6,10,23,504,Weather
+2023,2,12,99,9000,Emergency
+2023,6,12,75,9000,Traffic
+2023,6,2,48,504,Traffic
+2023,8,4,93,511,Emergency
+2023,4,19,27,311,Weather
+2023,1,18,23,511,Route Change
+2023,7,4,69,311,Emergency
+2023,4,18,47,504,Route Change
+2023,10,5,36,9000,Traffic
+2023,8,12,26,311,Emergency
+2023,11,0,13,511,Weather
+2023,10,4,21,504,Route Change
+2023,1,13,115,9000,Emergency
+2023,10,4,109,505,Emergency
+2023,7,21,116,506,Route Change
+2023,10,4,44,506,Route Change
+2023,4,1,91,304,Emergency
+2023,1,9,27,9000,Traffic
+2023,6,22,14,304,Route Change
+2023,5,0,14,505,Emergency
+2023,11,11,35,504,Traffic
+2023,8,20,101,504,Route Change
+2023,4,1,66,511,Weather
+2023,2,12,36,305,Route Change
+2023,6,2,45,304,Route Change
+2023,6,16,99,506,Emergency
+2023,7,13,33,305,Emergency
+2023,10,16,115,311,Weather
+2023,7,0,8,9000,Traffic
+2023,1,19,38,504,Traffic
+2023,10,8,77,504,Traffic

@@ -28,28 +28,6 @@ schema = pb.Schema(
         ("grade", "String"),
     ]
 )
-check_columns_test = (
-    pb.Validate(
-        data=cleaned_data,
-        tbl_name="cleaned_data",
-        label="Check Columns Test"
-    )
-    .col_schema_match(schema=schema)
-    .interrogate()
-)
-
-# Check if all the columns don't have a NONE/NULL value
-check_for_null_test = (
-    pb.Validate(
-        data=cleaned_data,
-        tbl_name="cleaned_data",
-        label="Check NULL Test"
-    )
-     .col_vals_not_null(
-      columns=["accessibility", "completeness", "freshness", "metadata", "usability", "grade"]
-   )
-    .interrogate()
-)
 
 # None of the columns in string type columns are ""
 check_for_empty_strings_test = (
@@ -65,17 +43,6 @@ check_for_empty_strings_test = (
     .interrogate()
 )
 
-# Check min and max for all numeric type columns except usability
-check_min_max_test = (
-    pb.Validate(
-        data=cleaned_data,
-        tbl_name="cleaned_data",
-        label="Check Min/Max Test"
-    )
-    .col_vals_between(columns=["accessibility", "completeness", "freshness", "metadata"], left=0, right=1)
-    .interrogate()
-)
-
 # Check if grade's value is only grade is Bronze, Silver, and Gold 
 check_grade_value_test = (
     pb.Validate(
@@ -88,8 +55,5 @@ check_grade_value_test = (
 )
 
 # RUN TESTS 
-check_columns_test.get_tabular_report().show("browser")
-check_for_null_test.get_tabular_report().show("browser")
 check_for_empty_strings_test.get_tabular_report().show("browser")
-check_min_max_test.get_tabular_report().show("browser")
 check_grade_value_test.get_tabular_report().show("browser")

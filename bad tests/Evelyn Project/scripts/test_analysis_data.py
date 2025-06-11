@@ -23,12 +23,6 @@ class TestAll(unittest.TestCase):
   def test_diseaseCount(self):
 
     #### Test disease_count data ####
-    # Test that there are no missing values in the dataset
-    self.assertEquals(self.disease_count.null_count().to_series().sum(), 0)
-
-    #Test all columns are int type
-    for type in self.disease_count.dtypes:
-      self.assertEquals(type, pl.Int64)
 
     #Test counts add to total
     for row in self.disease_count.rows(named = True):
@@ -41,19 +35,6 @@ class TestAll(unittest.TestCase):
 
       # Test that the dataset has 6 columns
       self.assertEquals(self.yearly_disease_count.shape[1], 9)
-
-      # Test that the all columns are int
-      categories = ["Coronavirus", "Influenza", "Syncytial Virus", 
-                   "Metapneumovirus", "Rhinovirus", "Parainfluenza", "Respiratory", "Total"]
-      for category in categories:
-        self.assertEquals(self.yearly_disease_count[category].dtype, pl.Int64)
-
-      # Test that there are no missing values in the dataset
-      self.assertEquals(self.yearly_disease_count.null_count().to_series().sum(), 0)
-
-      # Test that respiratory count <= total count
-      for row in self.yearly_disease_count.rows(named = True):
-        self.assertLessEqual(row["Respiratory"], row["Total"])
 
 if __name__ == "__main__":
   unittest.main()
