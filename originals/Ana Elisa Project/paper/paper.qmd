@@ -1,7 +1,7 @@
 ---
 title: "The Irreparable Golden Rule: How Hate Crimes Have Risen Over the Past Six Years Across Toronto"
-author: Ana 
-thanks: "Code and data are available at: github.co/AnaElisaLopezMiranda/hatecrimes_opentorontodata."
+author: Ana Elisa Lopez-Miranda
+thanks: "Code and data are available at: https://github.com/AnaElisaLopezMiranda/hatecrimes_opentorontodata."
 date: 05/22/25
 date-format: long
 
@@ -13,7 +13,6 @@ format:
         df-print: kable
         fig-pos: "H"
 number-sections: true
-bibliography: references.bib
 ---
 # Abstract
 This paper looks at data surrounding reported hate crimes in Toronto's 158 Neighbourhoods over the past six years. The data visualization shows that hate crimes are occurring at an increasing rate. The people targeted are the Jewish community for their religion, Chinese individuals for their ethnicity, Black individuals for their race, gay individuals for their sexual orientation, and transgender women for their gender. Government officials should become more concerned over the increasing rate and take actions to protect the people groups being targeted. 

@@ -1,8 +1,9 @@
 ---
 title: "Annual Analysis of Delays in TTC Streetcars for the year 2023"
 subtitle: "Is there a way to make commuter life easier?"
-author: ""
-thanks: ""
+author:
+  - Aakash Vaithyanathan
+thanks: "Code and data are available at: https://github.com/aakash2002/study_of_ttc_streetcar_delays"
 date: today
 date-format: long
 abstract: "This paper aims to study the causes of delays in Toronto Transit Commissions (TTC) streetcar service by examining the relationship between various factors like hour of day, streetcar lines and seasons. Our study found that the night shift had the higest delays by average of 25 minutes with high variability in delays observed during the hours of 9 AM to 5 PM. Interestingly, we did not observe any seasonal variations in the overall delay in streetcar and one possible reason for this could be due to our limited dataset. We beleive the results from this paper can help in better designing policies and transit schedules to improve the overall commuting experience."

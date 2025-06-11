@@ -3,7 +3,7 @@ title: "Respiratory Outbreak Trends in Toronto Healthcare Institutions Across th
 subtitle: "The Response of Coronavirus and Other Respiratory Diseases to COVID-19 Pandemic Policies"
 author: 
   - Evelyn Hughes
-thanks: "Code and data are available at: https://github.co/EvHughes/Donaldson-Paper."
+thanks: "Code and data are available at: https://github.com/EveHughes/Donaldson-Paper."
 date: 05/12/2025
 date-format: long
 
