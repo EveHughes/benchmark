@@ -1,0 +1,6 @@
+requests
+datetime
+matplotlib
+numpy
+pandas
+unittest
