@@ -1,0 +1,279 @@
+---
+title: "Accessible and Completed Datasets yet Majority are Bronze-Graded and not Updated Regularly with Missing Metadata"
+subtitle: "An analysis of the data quality of datasets available on the Open Data Toronto Portal (As of May 13, 2025)"
+author: 
+  - Emily Su
+thanks: "Code and data are available at: [https://github.com/moonsdust/data-quality](https://github.com/moonsdust/data-quality)."
+date: today
+date-format: long
+abstract: "As one of the central hubs for Toronto-related data, we analyzed the data quality of Open Data Toronto's catalogue. Despite Open Data Toronto's extensive dataset catalogue being accessible and having minimal missing data, 56% of their datasets are graded bronze and bronze-graded datasets are less likely to be updated and have completed metadata fields. These findings can help raise awareness to Open Data Toronto whose datasets play an important role in news reporting and policymaking, and also inform anyone interested in using datasets from Open Data Toronto's catalogue about what goes behind the grade given to datasets."
+format:
+  pdf:
+    toc: true
+number-sections: true
+bibliography: references.bib
+execute:
+  python: ".venv/bin/python"
+  external: true
+---
+```{python}
+#| include: false
+#| warning: false
+#| message: false
+
+import polars as pl
+import matplotlib.pyplot as plt
+import seaborn as sns
+import pandas as pd
+import pyarrow
+
+# Import dataset 
+cleaned_data = pl.read_csv("../data/02-analysis_data/analysis_data.csv")
+cleaned_data = cleaned_data.to_pandas()
+```
+
+
+# Introduction
+
+In 2024, a story collaboration between the Investigative Journalism Foundation (IJF) and CBC published in the CBC reported that the risk of death and injuries from fires in lower-income Toronto wards was higher compared to higher-income Toronto wards [@citeCityFire]. This story as well as other stories published in the news rely on data from Open Data Toronto to bring their stories to life [@citeCityFire]. Open Data Toronto serves as a hub for all types of data related to Toronto from crime data to information about shelters across the city [@citeODTabout]. Open Data Toronto has not only been used in the news but also in civic spaces when establishing city policies [@citeODTabout]. Given the importance of the hub, it raises concerns about the quality of Open Data Toronto's data catalogue and the following question: What is the quality of the datasets like on the Open Data Toronto portal? 
+
+In this paper, we analyzed data provided by Open Data Toronto on the data quality grade of the datasets in their catalogue and their characteristics like "accessibility", "completeness", "freshness", "metadata", and "usability". Farrow analyzed the data quality scores of the different datasets on the Open Data Toronto portal and found that the metadata and freshness scores were poor overall [@citeFarrow]. However there has been no analysis done on the characteristics and how they compare for different graded datasets as of 2025. In our findings, all datasets in Open Data Toronto portal are accessible and a majority of them having minimal missing data and are usable. It also showed that 56% of their datasets are graded bronze with bronze-graded datasets being less likely to be updated and have completed metadata fields. These bronze-graded datasets contribute the poor metadata and freshness scores we saw. These findings can inform Open Data Toronto about specific graded datasets that should be given more attention and the specific qualities of them such as metadata completion, which impacts the quality of the data used in the media and in policymaking. These findings can also be informative for users of the portal in order to understand what goes behind the grade of datasets on the portal and what they mean. 
+
+For the remainder of the paper, the data section (@sec-data) looks at the data used and how it was retrieved alongside the characteristics of the data, the data's limitations, and our variables of interest for our analysis. In the results section (@sec-results) we looked at the data more in-depth through graphs. With the discussion section (@sec-discussion), we will provide an overview of what was done in our results, discussing our results and its real-world implications, and indicate areas of improvements for our analysis and directions for future works. Finally, the appendix (@sec-appendix) includes acknowledgements and any additional information related to the paper.
+
+# Data {#sec-data}
+
+## Overview
+
+The dataset used in the paper comes from Open Data Toronto portal titled "Catalogue quality scores" [@citeOpenDataToronto]. Other datasets like "Toronto Open Data Intake" were considered in the analysis of the paper however, it does not indicate the quality of the datasets that are being requested. This specific dataset looks at the quality of the datasets available from the Open Data Toronto catalogue to inform others
+how valuable certain datasets are to be used for various situations like reporting on civic issues. The datasets are scored based on characteristics such as its accessibility, completeness, freshness, metadata, and usability, which are then calculated together to 
+give a dataset a grade. This grade is displayed alongside a trophy icon under the details section on a dataset page on Open Data Toronto portal [@citeOpenDataToronto].  
+
+We used the programming language Python [@citePython], the statistical programming language R [@citeR], and the following libraries to download, clean, analyze, and test the dataset and the overall paper itself: Requests [@citeRequests], datetime [@citeDatetime], Matplotlib [@citeMatplotlib], numpy [@citenumpy], pandas [@citepandas], Polars [@citepolars], Pydantic [@citePydantic], seaborn [@citeSeaborn], Pointblank [@citePointblank], and Pyarrow [@citePyarrow].
+
+We retrieved the raw dataset by calling the Open Data Toronto API [@citeOpenDataToronto] using the Requests library [@citeRequests] and downloading the file as a CSV. There are 39,580 total observations in the cleaned dataset with each observation being a dataset in the catalogue. @tbl-dataset-preview shows a preview of what the cleaned dataset looks like: 
+
+```{python}
+#| label: tbl-dataset-preview
+#| tbl-cap: Preview of dataset on Open Data Toronto's Catalogue quality scores as of May 13, 2025
+#| echo: false
+#| warning: false
+#| message: false
+
+# Create table
+cleaned_data[["accessibility", "completeness", "freshness", "metadata", "usability", "grade"]].head(5)
+```
+
+@tbl-summary-statistics shows the summary statistics of the cleaned dataset: 
+
+```{python}
+#| label: tbl-summary-statistics
+#| tbl-cap: Summary statistics of dataset on Open Data Toronto's Catalogue quality scores as of May 13, 2025
+#| echo: false
+#| warning: false
+#| message: false
+
+# Create table
+cleaned_data.describe()
+```
+
+## Measurement
+Open Data Toronto uses a metric called the "Data Quality Score" in order to give each dataset in their catalogue a grade indicating "bronze", "silver", or "gold", which can be seen through on the webpage for each dataset on Open Data Toronto portal website. In order to create the "Data Quality Score", they assembled the Data Quality Working Group, which consist of a diverse group of people from consumers of datasets to people who create datasets [@citeCatalogue; @citeCatalogueSteps]. 
+
+Open Data Toronto first reviewed various literature such as academic papers and industry white papers to compile 15 dimensions used to measure quality [@citeCatalogue; @citeCatalogueSteps]. The dimensions selected were as follows: Interpretability ("How easy it is to understand the data?"), Usability ("How easy is it to work with the data?"), Metadata ("Is the data well described?"), Freshness ("How close to creation time is the data published?"), Granularity ("How atomic is the data?"), Completeness ("How much data is missing?"), and Accessibility ("Is the data easy to access?") [@citeCatalogue; @citeCatalogueSteps]. 
+
+From there the Data Quality Working Group were surveyed and asked to rank the importance of each dimension when it comes to assessing data quality where 1 represents the most important and 7 being the least important. The results from the survey would then help the team determine the weight of each dimension towards the overall data quality score. Some of the dimensions were combined or removed. For example, granularity and interpretability were removed and interpretability was combined with usability. The team then used the ranking weighing method, Sum and Reciprocal, and obtain the following weights for each dimension alongside the type of questions asked for each dimension [@citeCatalogue; @citeCatalogueSteps]: 
+
+![Weight of the selected dimensions for data quality assessment and the metrics for each dimension](../other/images/weight_of_dimensions.png)
+
+For more technical details about how each dimension is calculated for a dataset and the final data quality score, it can be through the following link: [https://github.com/open-data-toronto/framework-data-quality/blob/master/data_quality_score.ipynb](https://github.com/open-data-toronto/framework-data-quality/blob/master/data_quality_score.ipynb) [@citeDQSNotebook]. However, it is worth noting that each dimension are calculated based on data obtained on the metadata information and the dataset itself. If the data quality score of a dataset has a normalized score of less than 60%, they are given the grade "Bronze", if the normalized score is between 60% and 80%, it is given the grade "Silver", and finally if the normalized score is over 80%, it is given the grade "Gold". The Information & Technology department at Open Data Toronto collected datasets on their portal using the CKAN Datastore API in order to give each of them a data quality score and grade [@citeCatalogue; @citeCatalogueSteps]. The score for each dataset in the portal is recalculated every week by the team [@citeCatalogue]. 
+
+## Variables of Interest
+
+Our variables of interest that we used in our analysis are the following: "accessibility", "completeness", "freshness", "metadata", "usability", and "grade". "Accessibility" is a score from 0 to 1 that indicates the degree that the dataset can be access or not through the Open Data Toronto API, keywords or tags, and automated data pipelines with 1 being that it can not be accessed with the various methods noted and 0 if not at all. "Completeness" is a score from 0 to 1 that indicates how much of the data is missing with 1 being that there is no missing data and 0 being that all data fields are empty or missing. The "freshness" variable is a score from 0 to 1 that indicates how up-to-date the data where a shorter time duration between the recent refresh date and time and the previous refresh date and time before that gives a higher score. The "metadata" variable indicates how complete the following metadata fields are for a dataset from a scale of 0 to 1: Description, Limitations, Topics, Contact Email. The more metadata fields completed, the higher the metadata score. The "usability" variable is a score from 0 to 1 indicating how easy it would be to use the dataset and this is determine by the proportion of meaningful column names or in other words column names with English words in it. However a limitation of the "usability" variables is that it does not consider datasets that are in different languages other than English. 
+
+# Results {#sec-results}
+
+## Grade and accessibility of datasets 
+```{python}
+#| label: fig-grade-accessibility-bar
+#| fig-cap: "Number of datasets and their accessibility on Open Data Toronto graded bronze, silver, and gold as of May 13, 2025"
+#| warning: false
+#| message: false
+#| echo: false
+
+# Set styling
+sns.set_theme(style="whitegrid")
+plt.figure(figsize=(12, 6))
+
+# Code from: https://stackoverflow.com/questions/49044131/how-to-add-data-labels-to-seaborn-countplot-factorplot
+
+# Create countplot
+ax = sns.countplot(cleaned_data, x="grade",
+                   order=cleaned_data["grade"].value_counts(ascending=False).index, palette = "crest", hue = "accessibility");
+# Create label
+lbls = [f'{p[0]} ({p[1]:.0f}%)' for p in zip(cleaned_data['grade'].value_counts(ascending=False), cleaned_data['grade'].value_counts(ascending=False, normalize=True).values * 100)]
+# Combine countplot and labels into bar_label
+ax.bar_label(container=ax.containers[0], labels=lbls)
+
+# Add labels and title
+plt.xlabel("Grade of the Dataset")
+plt.ylabel("Number of Datasets")
+
+# Adjust layout to prevent clipping of tick-labels
+plt.tight_layout()
+
+# Display the plot
+plt.show()
+```
+
+As of May 13, 2025, @fig-grade-accessibility-bar shows that 56% of datasets on the Open Data Toronto portal had a grade of "bronze". Following this, 25% of datasets are graded "gold" and finally 19% of datasets are graded "silver". This means half of the datasets on the Open Data Toronto portal are ranked "bronze". However since all the datasets have an accessibility score of 1, which indicates they are accessible, and the mean accessibility score is 1 by @tbl-summary-statistics as well, it indicates all datasets on the Open Data Toronto portal can be accessed directly using methods like an API, tags or keywords, or automated data pipelines accessing Open Data Toronto's catalogue.
+
+## The relationship between completeness and usability scores of datasets 
+```{python}
+#| label: fig-completeness-usability-scatterplot
+#| fig-cap: "The relationship between completeness scores and usability scores of Open Data Toronto's datasets across different grades as of May 13, 2025"
+#| warning: false
+#| message: false
+#| echo: false
+
+# Set styling
+sns.set_theme(style="whitegrid")
+
+# Create lmplot
+ax = sns.lmplot(data = cleaned_data, x = "completeness", y = "usability", col = "grade", hue="grade", palette="crest", ci=None,
+    height=4, scatter_kws={"s": 50, "alpha": 0.2})
+    
+# Add labels and title
+ax.set(xlabel="Completeness of the Dataset", ylabel="Usability of the Dataset")
+
+# Adjust layout to prevent clipping of tick-labels
+plt.tight_layout()
+
+# Display the plot
+plt.show()
+```
+
+As seen in @fig-completeness-usability-scatterplot, for all grades, there's a slight positive relationship between the completeness of a dataset on the Open Data Toronto portal and its usability. However, this relationship is more apparent with the datasets that are graded bronze. This means as the completeness score increases, the usability score of the dataset increases. We can also see most of the scores for bronze-graded datasets are more spread out along the completeness score axis compared to gold-graded and silver-graded datasets. This indicates that more bronze-grade datasets contain more missing data than the other graded datasets. Despite this, @fig-completeness-distribution shows that the completeness score of datasets on Open Data Toronto skews left with their peaks being above 0.6 (60%), this indicates that across all grades, the datasets have minimal missing data. @tbl-summary-statistics also indicates that the mean values for completeness and usability scores across all datasets are 0.87 (87%) and 0.84 (84%), respectively. 
+
+```{python}
+#| label: fig-completeness-distribution
+#| fig-cap: "The distribution of completeness scores of Open Data Toronto's datasets across different grades as of May 13, 2025"
+#| warning: false
+#| message: false
+#| echo: false
+
+# Set styling
+sns.set_theme(style="whitegrid")
+
+# Create density plot
+ax = sns.kdeplot(
+   data=cleaned_data, x="completeness", hue="grade",
+   fill=True, common_norm=False, palette="crest",
+   alpha=.3, linewidth=1.3,
+)
+
+# Add labels and title
+plt.xlabel("Completeness Score of the Dataset")
+plt.ylabel("Number of Datasets")
+
+# Adjust layout to prevent clipping of tick-labels
+plt.tight_layout()
+
+# Display the plot
+plt.show()
+```
+
+
+## Metadata completeness scores of datasets
+```{python}
+#| label: fig-metadata-distribution
+#| fig-cap: "The distribution of metadata completeness scores of Open Data Toronto's datasets across different grades as of May 13, 2025"
+#| warning: false
+#| message: false
+#| echo: false
+
+# Set styling
+sns.set_theme(style="whitegrid")
+
+# Create density plot
+ax = sns.kdeplot(
+   data=cleaned_data, x="metadata", hue="grade",
+   fill=True, common_norm=False, palette="crest",
+   alpha=.3, linewidth=1.3,
+)
+
+# Add labels and title
+plt.xlabel("Metadata Completeness Score of the Dataset")
+plt.ylabel("Number of Datasets")
+
+# Adjust layout to prevent clipping of tick-labels
+plt.tight_layout()
+
+# Display the plot
+plt.show()
+```
+
+@fig-metadata-distribution shows that the metadata score for all datasets of Open Data Toronto's datasets has a multimodal distribution. However, the distribution of gold-graded datasets skew left overall. This means that most of the gold-graded datasets have metadata that is almost or is completed filled on the Open Data Toronto portal. On the other hand, the distribution of bronze-graded datasets overall skew right with its largest peak being below a metadata score of 0.5 or 50%. This indicates that the metadata fields for bronze-graded datasets are not sufficiently field or yet not filled out on the Open Data Toronto portal. @tbl-summary-statistics indicates that the mean metadata completeness score is 0.47 (47%) for all datasets on the portal. This means that the average metadata completeness score is below 50% for all datasets on the portal. 
+
+## Freshness scores of datasets 
+```{python}
+#| label: fig-freshness-distribution
+#| fig-cap: "The distribution of freshness scores of Open Data Toronto's datasets across different grades as of May 13, 2025"
+#| warning: false
+#| message: false
+#| echo: false
+
+# Set styling
+sns.set_theme(style="whitegrid")
+
+# Create density plot
+ax = sns.kdeplot(
+   data=cleaned_data, x="freshness", hue="grade",
+   fill=True, common_norm=False, palette="crest",
+   alpha=.3, linewidth=1.3,
+)
+
+# Add labels and title
+plt.xlabel("Freshness Score of the Dataset")
+plt.ylabel("Number of Datasets")
+
+# Adjust layout to prevent clipping of tick-labels
+plt.tight_layout()
+
+# Display the plot
+plt.show()
+```
+
+As of May 13, 2025, @fig-freshness-distribution indicates that for gold-graded and silver-graded datasets, their distributions skews left and that the highest peaks of their distributions are around a freshness score of 1.0 or 100%. This indicates that the datasets that are gold-graded and silver-graded are frequently updated. However with bronze-graded datasets, its distribution skews right with its highest peak being around a freshness score 0.0 or 0%. This indicates that the datasets are not updated frequently or at all. @tbl-summary-statistics also shows that the mean freshness score is 0.56 (56%) across all datasets.  
+
+\newpage
+
+# Discussion {#sec-discussion}
+In @sec-results, we looked at the data quality of 39,580 datasets on the Open Data Toronto as of May 13, 2025 and the different characteristics of the datasets. We found that our analysis was consistent with what @citeFarrow found where the metadata and freshness scores of datasets overall was poor but also we found that the low scores were contributed from the bronze-graded datasets. 
+
+## Majority of Datasets are graded "Bronze" 
+We saw with that with @fig-grade-accessibility-bar that 56% of datasets in the Open Data Toronto portal are graded "Bronze". This indicates that 56% of datasets had a data quality score of less than 60%. This also raises concerns regarding the quality of the datasets used in news report for example as well as bring awareness of the quality of datasets currently on the portal. Fortunately based on what @citeFarrow found in comparison to our results in 2025, there has a decrease in bronze-graded datasets since 2021 from 78% to 56%. 
+
+## Bronze-graded datasets are less likely to update and have missing metadata 
+Our results from @fig-metadata-distribution and @fig-freshness-distribution shows that bronze-graded datasets have low metadata and freshness scores close to 0 or 0%. This indicates that the bronze-graded datasets contributes to the low metadata and freshness score seen of Open Data Toronto's entire data catalogue. As noted by IBM, Metadata plays an important role in "data governance and data management" [@citeMetadataImportance]. This means that the lack of metadata for a dataset decreases the experience for users and organization of using the datasets leading to potentially consequences due to issues such as the lack of information of the dataset's limitations and the lack of information about the dataset author's and their contact information. 
+
+## Areas of improvement 
+As mentioned in @sec-data, datasets have a higher usability score if their column names contains more English words. However, this criteria does not consider datasets that could be still useful but are not in English. Another limitation of our analysis is that the weight of the different dimensions in the data that goes towards the grade of a dataset is subjective in nature since the weighing is based on survey data that had people rank the perceived importance of each dimension. 
+
+## Next steps
+Results from our analysis can be used help the Open Data Toronto team figure out the qualities of bronze-graded datasets that leads to their low scores and also be insight for users of the datasets from Open Data Toronto about what goes behind the grade of the datasets. Future works regarding Open Data Toronto's catalogue can look into the data quality score of the datasets from different divisions.
+
+\newpage
+
+\appendix
+
+# Appendix {#sec-appendix}
+
+## Acknowledgments
+
+We would like to thank @tellingstories for providing assistance with the code used to produce the graphs in this paper. We would also like to thank the team at the IJF for their feedback. 
+
+# References
+
+
